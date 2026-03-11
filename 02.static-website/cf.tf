@@ -44,9 +44,30 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   tags = {
     Environment = "production"
   }
-
   viewer_certificate {
-    cloudfront_default_certificate = true
-    ssl_support_method             = "sni-only"
+    acm_certificate_arn = data.aws_acm_certificate.cert.arn
+    ssl_support_method  = "sni-only"
+  }
+}
+
+#Creating the route 53 zone and creating record
+
+resource "aws_route53_zone" "static" {
+  name = var.domain
+
+  tags = {
+    Environment = "dev"
+    Name        = "static-hosted-zone"
+  }
+}
+
+resource "aws_route53_record" "www" {
+  name    = "www"
+  type    = "A"
+  zone_id = aws_route53_zone.static.zone_id
+  alias {
+    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
+    evaluate_target_health = false
   }
 }

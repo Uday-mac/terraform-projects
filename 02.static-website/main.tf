@@ -55,11 +55,11 @@ resource "aws_s3_bucket_policy" "allow_cf" {
 }
 
 resource "aws_s3_object" "object" {
-  for_each     = fileset("${path.module}/www", "**/*")
-  bucket       = aws_s3_bucket.static-www.bucket
-  key          = each.value
-  source       = "${path.module}/www,${each.value}"
-  etag         = filemd5("${path.module}/www/${each.value}")
+  for_each = fileset("${path.module}/www", "**/*")
+  bucket   = aws_s3_bucket.static-www.bucket
+  key      = each.value
+  source   = "${path.module}/www,${each.value}"
+  etag     = filemd5("${path.module}/www/${each.value}")
   content_type = lookup(
     {
       ".css"  = "text/css"
