@@ -54,6 +54,7 @@ resource "aws_autoscaling_group" "web-asg" {
   health_check_type         = "ELB"
   desired_capacity          = 2
   vpc_zone_identifier       = aws_subnet.private-subnet[*].id
+  target_group_arns = [aws_lb_target_group.web-tg.arn]
 
   launch_template {
     id      = aws_launch_template.web-template.id
